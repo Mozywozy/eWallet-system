@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS `wallet_transactions` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `wallet_id` INT NOT NULL,
+    `amount` DECIMAL(15,2) NOT NULL DEFAULT 0,
+    `wallet_transaction_type` ENUM('CREDIT','DEBIT') NOT NULL,
+    `reference` VARCHAR(100) NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
