@@ -14,7 +14,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// Service interface untuk mengelola koneksi database
 type Service interface {
 	Health() map[string]string
 	Close() error

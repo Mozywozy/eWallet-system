@@ -4,21 +4,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// AuthHandler menangani HTTP request untuk auth
 type AuthHandler struct {
 	authService AuthService
 }
 
-// NewAuthHandler membuat instance handler baru
 func NewAuthHandler(service AuthService) *AuthHandler {
 	return &AuthHandler{authService: service}
 }
 
-// Register menangani registrasi user
 func (h *AuthHandler) Register(c *fiber.Ctx) error {
 	var request RegisterRequest
 
-	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid request body",
@@ -33,7 +29,6 @@ func (h *AuthHandler) Register(c *fiber.Ctx) error {
 		})
 	}
 
-	// Register user
 	createdUser, err := h.authService.RegisterUser(*user)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -41,7 +36,6 @@ func (h *AuthHandler) Register(c *fiber.Ctx) error {
 		})
 	}
 
-	// Response sukses tanpa password
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User registered successfully",
 		"data": fiber.Map{
