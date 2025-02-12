@@ -21,13 +21,16 @@ func (s *FiberServer) RegisterFiberRoutes() {
 
 	s.App.Get("/health", s.healthHandler)
 
-	userRepo := auth.NewUserRepository(s.db) 
+	userRepo := auth.NewUserRepository(s.db)
 	authService := auth.NewAuthService(userRepo)
 	authHandler := auth.NewAuthHandler(authService)
 
 	// Routing
 	api := s.App.Group("/user/v1")
 	api.Post("/register", authHandler.Register)
+	api.Post("/login", authHandler.Login)
+	api.Post("/logout", auth.JWTMiddleware() ,authHandler.Logout)
+	api.Post("/refresh", authHandler.RefreshToken)
 
 }
 

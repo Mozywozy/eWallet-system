@@ -42,3 +42,19 @@ func (r *RegisterRequest) ConvertToUser() (*User, error) {
 		DOB:         parsedDOB,
 	}, nil
 }
+
+type UserSession struct {
+	ID                uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserID            uint      `gorm:"not null" json:"user_id"`
+	Token             string    `gorm:"type:varchar(255);not null" json:"token"`
+	RefreshToken      string    `gorm:"type:varchar(255);not null" json:"refresh_token"`
+	TokenExpired      time.Time `gorm:"not null" json:"token_expired"`
+	RefreshTokenExpired time.Time `gorm:"not null" json:"refresh_token_expired"`
+	CreatedAt         time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt         time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
