@@ -2,6 +2,8 @@ package server
 
 import (
 	"ewallet-engine/internal/auth"
+	"ewallet-engine/internal/balance"
+	"ewallet-engine/internal/database"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -32,6 +34,25 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	api.Post("/logout", auth.JWTMiddleware() ,authHandler.Logout)
 	api.Post("/refresh", authHandler.RefreshToken)
 
+}
+
+func (s *FiberServer) BalanceFiberRoutes() {
+	s.App.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
+		AllowHeaders:     "Accept,Authorization,Content-Type",
+		AllowCredentials: false, // credentials require explicit origins
+		MaxAge:           300,
+	}))
+
+	db := database.New().GetDB()
+	balanceRepo := balance.NewBalanceRepository(db)
+	balanceService := balance.NewBalanceService(balanceRepo)
+	balanceHandler := balance.NewBalanceHandler(balanceService)
+
+	api := s.App.Group("/user/v1")
+	api.Get("/balance", auth.JWTMiddleware(), balanceHandler.GetBalanceHandler)
+	api.Post("/topup", auth.JWTMiddleware(), balanceHandler.TopUpBalanceHandler)
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {

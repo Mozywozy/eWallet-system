@@ -43,6 +43,7 @@ func main() {
 	server := server.New()
 
 	server.RegisterFiberRoutes()
+	server.BalanceFiberRoutes()
 
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
