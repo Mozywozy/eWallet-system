@@ -4,6 +4,7 @@ import (
 	"ewallet-engine/internal/auth"
 	"ewallet-engine/internal/balance"
 	"ewallet-engine/internal/database"
+	"ewallet-engine/internal/transactions"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -53,6 +54,26 @@ func (s *FiberServer) BalanceFiberRoutes() {
 	api := s.App.Group("/user/v1")
 	api.Get("/balance", auth.JWTMiddleware(), balanceHandler.GetBalanceHandler)
 	api.Post("/topup", auth.JWTMiddleware(), balanceHandler.TopUpBalanceHandler)
+}
+
+func (s *FiberServer) TransactionFiberRoutes() {
+	s.App.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
+		AllowHeaders:     "Accept,Authorization,Content-Type",
+		AllowCredentials: false, // credentials require explicit origins
+		MaxAge:           300,
+	}))
+
+	db := database.New().GetDB()
+	transactionRepo := transactions.NewTransactionRepository(db)
+	transactionService := transactions.NewTransactionService(transactionRepo)
+	transactionHandler := transactions.NewTransactionHandler(transactionService)
+
+	api := s.App.Group("/user/v1")
+	api.Post("/transaction", auth.JWTMiddleware(), transactionHandler.CreateTransactionHandler)
+	api.Put("/transaction/status", auth.JWTMiddleware(), transactionHandler.UpdateTransactionHandler)
+	api.Get("/transaction/:reference", auth.JWTMiddleware(), transactionHandler.GetTransactionHandler)
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
